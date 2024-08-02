@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "metrics-study"
+version = "0.1.0"
+description = ""
+authors = ["madamoreira <marcio.moreira@fluencyacademy.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["standart"], version = "^0.111.0"}
+opentelemetry-instrumentation-fastapi = "^0.47b0"
+opentelemetry-instrumentation-system-metrics = "^0.47b0"
+opentelemetry-exporter-otlp = "^1.26.0"
+opentelemetry-distro = "^0.47b0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

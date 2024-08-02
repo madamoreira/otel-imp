@@ -1,0 +1,40 @@
+  services:
+    prometheus:
+      image: prom/prometheus
+      command:
+        - --web.enable-remote-write-receiver
+        - --config.file=/etc/prometheus/prometheus.yml
+        # - --enable-feature=otlp-write-receiver
+      volumes:
+        - ./etc/prometheus.yaml:/etc/prometheus/prometheus.yml
+      ports:
+        - 9090:9090
+
+    grafana:
+      image: grafana/grafana
+      ports:
+        - 3000:3000
+      volumes:
+        - ./etc/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+        - ./etc/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+        - ./etc/grafana/dashboards:/etc/grafana/dashboards
+
+    otel-collector:
+      image: otel/opentelemetry-collector-contrib
+      volumes:
+        - ./etc/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+
+    cookies:
+      build: "."
+      stop_signal: SIGINT
+      ports:
+        - 8008:8008
+      environment:
+        - OTEL_EXPORTER_OTLP_INSECURE=true
+        - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+        - OTEL_METRICS_EXPORTER=otlp
+        - OTEL_SERVICE_NAME=cookies
+        - OTEL_METRIC_EXPORT_INTERVAL=10
+        - COLLECTOR_OTLP_ENABLED=true
+      depends_on:
+        - otel-collector
